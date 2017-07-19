@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Serialization
 {
     [Serializable]
-    public class Order : ISerializable
+    public class Order : IDeserializationCallback
     {
         public int Count;
 
@@ -19,17 +19,9 @@ namespace Serialization
             TotalPrice = count * price;
         }
 
-        public Order(SerializationInfo info, StreamingContext context)
+        public void OnDeserialization(object sender)
         {
-            Count = (int)info.GetValue("Count", typeof(int));
-            Price = (decimal)info.GetValue("Price", typeof(decimal));
             TotalPrice = Count * Price;
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("Count", Count, typeof(int));
-            info.AddValue("Price", Price, typeof(decimal));
         }
     }
 }
