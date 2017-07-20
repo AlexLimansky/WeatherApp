@@ -20,8 +20,7 @@ namespace Multithreading
             }
             DisplayHandler handler = new DisplayHandler(StartTimer);
             Console.WriteLine("Changes check is on");
-            IAsyncResult resultObj = handler.BeginInvoke(pathToFile, new AsyncCallback(AsyncCompleted), null);
-            string res = handler.EndInvoke(resultObj);
+            IAsyncResult resultObj = handler.BeginInvoke(pathToFile, new AsyncCallback(AsyncCompleted), null);            
             Console.ReadLine();
         }
         public static void Check(object obj)
@@ -34,11 +33,10 @@ namespace Multithreading
                 if (currentText != previousText)
                 {
                     result = currentText;
+                    Console.WriteLine("File was changed " + DateTime.Now.ToShortDateString() + " at " + DateTime.Now.ToShortTimeString());
                     Console.WriteLine("Last saved text:" + Environment.NewLine + previousText);
                     Console.WriteLine("Current text:");
-                    Console.WriteLine(result);
-                    Console.WriteLine("Changes check is off");
-                    timer.Dispose();
+                    Console.WriteLine(result + Environment.NewLine);
                 }
             }
         }
