@@ -1,0 +1,25 @@
+.item-list{
+	display: block;
+	width: 100%;
+}
+.pager {
+	padding: 1em 0;
+	padding-left:20px;
+	background: #eee;
+	border-bottom: 3px solid #999;
+	list-style: none; 
+	margin: 0 auto;
+}
+.pager a, .first {
+	text-decoration: none;
+	color: maroon;
+	padding: 1em;
+}
+.pager li {
+	display: inline;
+}
+.pager li:hover, .pager a:hover{
+	color: #000;
+	background: #bbb;
+	border-bottom: 3px solid #000;
+}
