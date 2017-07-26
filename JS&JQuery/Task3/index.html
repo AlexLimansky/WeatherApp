@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="scripts/tasks.js"></script>
+		<script src="scripts/taskManager.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading">Example</div>
+				<div class="panel-body">
+					<form role="form">
+						<div class="form-group">
+							<label for="inputName">Task type:</label>
+							<select id="inputName" class="form-control">
+							</select> 
+						</div>				  
+						<button id="addtask"  type="button" class="btn btn-default">Add task</button>
+						<button id="startWork"  type="button" class="btn btn-default">Start work</button>
+						<button id="stopWork"  type="button" class="btn btn-default">Stop work</button>
+						<button id="showrogress"  type="button" class="btn btn-default">Show progress</button>
+					</form>
+				</div>
+			</div>
+			<div class="">
+				<div id="progressBoard">  
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

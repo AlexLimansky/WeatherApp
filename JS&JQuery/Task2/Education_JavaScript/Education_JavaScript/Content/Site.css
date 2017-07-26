@@ -1,0 +1,40 @@
+body
+{
+    font-size: .85em;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    color: #232323;
+    background-color: #fff;
+}
+
+header,
+footer,
+nav,
+section {
+    display: block;
+}
+
+/* Styles for basic forms
+-----------------------------------------------------------*/
+
+fieldset 
+{
+    border:1px solid #ddd;
+    padding:1.4em;
+    margin:1.5em 0;
+}
+
+label 
+{
+    font-size:1.2em;
+    font-weight: bold;
+    float: left;
+    width: 100px;
+    display: block;
+}
+
+fieldset .item {
+    margin: 5px 0;
+    clear: both;
+    line-height: 18px;
+    vertical-align: middle;
+}

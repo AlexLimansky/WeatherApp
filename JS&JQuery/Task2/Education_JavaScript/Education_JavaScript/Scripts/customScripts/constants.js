@@ -1,0 +1,1 @@
+﻿var baseUrl = "http://localhost:2594";
