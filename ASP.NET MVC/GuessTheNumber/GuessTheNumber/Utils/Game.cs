@@ -11,6 +11,6 @@ namespace GuessTheNumber.Utils
         public static int? Number { get; set; }
         public static List<Player> Players = new List<Player>();
         public static string Author { get; set; }
-        public static List<Move> Log = new List<Move>();
+        public static List<LogEntry> Log = new List<LogEntry>();
     }
 }

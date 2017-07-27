@@ -50,4 +50,4 @@
     </tbody>
 </table>
 
-<a href="@Url.Action("Index")"class="btn btn-success">Start New Game</a>
+@Html.ActionLink("Start New Game", "Index", "Home", new { isRestart = true }, new { @class = "btn btn-success" })

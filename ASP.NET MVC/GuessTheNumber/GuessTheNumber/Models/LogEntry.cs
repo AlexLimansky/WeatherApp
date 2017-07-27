@@ -5,7 +5,7 @@ using System.Web;
 
 namespace GuessTheNumber.Models
 {
-    public class Move
+    public class LogEntry
     {
         public DateTime time { get; set; }
         public string playerGuessed { get; set; }
