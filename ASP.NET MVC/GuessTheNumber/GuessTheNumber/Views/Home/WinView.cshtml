@@ -1,0 +1,53 @@
+﻿@using GuessTheNumber.Utils
+
+<h2>The Game Is Over!</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-md-2">Started Game</th>
+            <th class="col-md-2">Player Guessed</th>
+            <th class="col-md-1">Number Offered</th>
+            <th class="col-md-1">Number Was</th>
+            <th class="col-md-3">Date</th>
+            <th class="col-md-3">Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            string rowClass = "";
+         }
+        @foreach (var m in Game.Log)
+        {
+            rowClass = "";
+            if (m.yourNumber != int.MaxValue)
+            {
+                if(m.yourNumber == m.realNumber)
+                {
+                    rowClass = "success";
+                }
+                <tr class="@rowClass">
+                    <td>@m.playerProposed</td>
+                    <td>@m.playerGuessed</td>
+                    <td>@m.yourNumber</td>
+                    <td>@m.realNumber</td>
+                    <td>@m.time.ToShortDateString()</td>
+                    <td>@m.time.ToShortTimeString()</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>@m.playerProposed</td>
+                    <td>@m.playerGuessed</td>
+                    <td>Restarted game</td>
+                    <td></td>
+                    <td>@m.time.ToShortDateString()</td>
+                    <td>@m.time.ToShortTimeString()</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index")"class="btn btn-success">Start New Game</a>

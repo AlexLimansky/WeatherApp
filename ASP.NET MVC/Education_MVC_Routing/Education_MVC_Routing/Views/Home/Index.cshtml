@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Маршруты</h2>
+
+<ul style="list-style-type:none">
+    <li>(пустой маршрут) - @Url.Action("Index", "Home")</li>
+    <li>categories - @Url.Action("List", "Categories")</li>
+    <li>category/{categoryName} - @Url.Action("Category", "Categories", new { categoryName = "SomeCategory" })</li>
+    <li>category/{categoryName}/subcategories - @Url.Action("SubCategories", "Categories", new { categoryName = "SomeCategory" })</li>
+    <li>category/{categoryName}/{subCategoryName} - @Url.Action("SubCategory", "Categories", new { categoryName = "SomeCategory", subCategoryName = "SomeSubCategory" })</li>
+    <li>logon - @Url.Action("LogOn", "Account")</li>
+    <li>logoff - @Url.Action("LogOff", "Account")</li>
+    <li></li>
+</ul>

@@ -1,0 +1,28 @@
+﻿@model String
+@using GuessTheNumber.Utils
+<h2>Welcome, @ViewBag.PlayerName</h2>
+<a href="@Url.Action("Logout")" class="btn btn-success">You can change your name</a>
+<hr />
+@{
+    string playersList = "Players on server:";
+}
+
+@foreach (var player in Game.Players)
+{
+    playersList += player.Name + " ";
+}
+
+@playersList
+
+
+<h3>Try to guess the number @Game.Author proposed)))</h3>
+<form method="post" action="/Home/Guess">
+    <div class="form-group">
+        <label for="number">Enter the number to guess:</label>
+        <input type="number" class="form-control" name="number">
+    </div>
+    <button type="submit" id="guess" class="btn btn-primary">Guess</button>
+    <a href="@Url.Action("Restart")" class="btn btn-success">Start New Game</a>
+    <h3>@ViewBag.Result</h3>
+</form>
+
