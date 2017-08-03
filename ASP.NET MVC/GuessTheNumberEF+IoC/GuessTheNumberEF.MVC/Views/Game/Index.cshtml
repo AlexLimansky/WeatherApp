@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<hr />
+<h3 class="message">@ViewBag.Message</h3>
+
+<form>
+    <div class="form-group">
+        <label for="number">Enter the number:</label>
+        <input type="number" class="form-control" name="number" id="number">
+    </div>
+    <button name="action" value="start" class="btn btn-success game-btn">Start</button>
+    <button name="action" value="guess" class="btn btn-primary game-btn">Guess</button>
+</form>
+<hr />
+<div><h4 id="result"></h4></div>
