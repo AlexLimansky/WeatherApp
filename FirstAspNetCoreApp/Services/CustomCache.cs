@@ -41,18 +41,16 @@ namespace FirstAspNetCoreApp.Services
         {
             if(!keys.Contains(key))
             {
-                keys.Add(key);
-                memoryCache.Set(key, value, options);
-            }           
+                keys.Add(key);               
+            }
+            memoryCache.Set(key, value, options);
         }
 
         public bool TryGetValue(object key, out object value)
         {
-            value = null;
-            object item = null;
-            if(memoryCache.TryGetValue(key, out item))
+            value = memoryCache.Get(key);
+            if(value != null)
             {
-                value = item;
                 return true;
             }
             return false;

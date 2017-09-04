@@ -41,6 +41,7 @@ namespace FirstAspNetCoreApp
             services.AddMemoryCache();
             services.Configure<ResponseCacheOptions>(Configuration.GetSection("Cache"));
             services.AddScoped<IDateDisplayer, MyDateDisplayer>();
+            services.AddSingleton<IMemoryCache, MemoryCache>();
             services.AddSingleton<IClearableCache, CustomCache>();
         }
 
