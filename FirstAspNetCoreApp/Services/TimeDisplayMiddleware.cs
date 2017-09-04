@@ -20,10 +20,12 @@ namespace FirstAspNetCoreApp.Services
         public async Task Invoke(HttpContext context, IDateDisplayer displayer)
         {
             await next(context);
+            var path = context.Request.Path;
             string result = current ? displayer.DisplayStart() : displayer.DisplayCurrent();
-            logger.LogInformation(current ? "TimeDisplayMiddleware invoked for MyDateDisplayer.DisplayStart() method." : "TimeDisplayMiddleware invoked for MyDateDisplayer.DisplayCurrent() method.");           
+            logger.LogInformation(current ? "TimeDisplayMiddleware invoked for MyDateDisplayer.DisplayStart() method." : "TimeDisplayMiddleware invoked for MyDateDisplayer.DisplayCurrent() method.");
+            context.Items["result"] = result;
             await context.Response.WriteAsync(result);
-            logger.LogDebug("TimeDisplayMiddleware returned " + result);
+            logger.LogDebug($"TimeDisplayMiddleware returned " + result);
         }
     }
 }

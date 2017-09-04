@@ -12,6 +12,7 @@ namespace FirstAspNetCoreApp
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseUrls("http://0.0.0.0:5000")
                 .UseStartup<Startup>()
+                .UseIISIntegration()
                 .Build();
             host.Run();
         }

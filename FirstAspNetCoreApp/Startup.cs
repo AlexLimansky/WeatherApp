@@ -7,12 +7,22 @@ using Microsoft.Extensions.Configuration;
 using System;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FirstAspNetCoreApp
 {
     public class Startup
     {
         public static IConfigurationRoot Configuration { get; set; }
+
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
 
         private static void CreateError(IApplicationBuilder app)
         {
@@ -27,22 +37,25 @@ namespace FirstAspNetCoreApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.AddMemoryCache();
+            services.Configure<ResponseCacheOptions>(Configuration.GetSection("Cache"));
             services.AddScoped<IDateDisplayer, MyDateDisplayer>();
+            services.AddSingleton<IClearableCache, CustomCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime lifetime, IDateDisplayer displayer)
         {
-            Configuration = MyConfigurator.OptionsConfigure(env);
+            var s = app.ApplicationServices.GetService<IClearableCache>();
             lifetime.ApplicationStarted.Register(() => displayer.SetStart());
-            app.UseDeveloperExceptionPage();
             loggerFactory.AddNLog();
-            loggerFactory.ConfigureNLog(MyConfigurator.NLogConfigure(Configuration, env));
+            loggerFactory.ConfigureNLog(MyConfigurator.NLogConfigure(Configuration, env));           
             app.UseErrorHandler();
-            app.Map("/throw", CreateError);                        
-            app.UseTimeDisplayer();
-            var logger = loggerFactory.CreateLogger("NetCoreMVCLogger");
-            logger.LogError(env.EnvironmentName);
+            app.UseCacheCleaner();
+            app.UseCache();
+            app.Map("/throw", CreateError);                                            
+            app.UseTimeDisplayer();           
         }
     }
 }
