@@ -1,0 +1,31 @@
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+
+namespace WeatherApp.Web.Services
+{
+    public static class NLogConfigurator
+    {
+        public static LoggingConfiguration Configure(IConfigurationRoot configuration, IHostingEnvironment env, IOptions<LogOptions> options)
+        {
+            LogOptions option = options.Value;
+            var config = new LoggingConfiguration();
+            var fileTarget = new FileTarget
+            {
+                FileName = "${basedir}/log.txt",
+                Layout = "${message}"
+            };
+            config.AddTarget("file", fileTarget);
+            var ruleDefault = new LoggingRule("WeatherApp*", LogLevel.FromString(option.Default), fileTarget);
+            var ruleSystem = new LoggingRule("System", LogLevel.FromString(option.System), fileTarget);
+            var ruleMicrosoft = new LoggingRule("Microsoft", LogLevel.FromString(option.Microsoft), fileTarget);
+            config.LoggingRules.Add(ruleDefault);
+            config.LoggingRules.Add(ruleSystem);
+            config.LoggingRules.Add(ruleMicrosoft);
+            return config;
+        }
+    }
+}
