@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using WeatherApp.Web.Options;
 
 namespace WeatherApp.Web.Services
 {

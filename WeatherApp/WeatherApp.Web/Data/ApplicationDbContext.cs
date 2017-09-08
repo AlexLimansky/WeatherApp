@@ -6,6 +6,7 @@ namespace WeatherApp.Web.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<CityWeatherInfo> Cities { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -14,6 +15,7 @@ namespace WeatherApp.Web.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<CityWeatherInfo>().ToTable("Cities");
             base.OnModelCreating(builder);
         }
     }

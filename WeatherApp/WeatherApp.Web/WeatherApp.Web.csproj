@@ -6,13 +6,6 @@
     <UserSecretsId>aspnet-WeatherApp.Web-91693CA2-BB7E-4FDF-B46F-B66A82C9F218</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Data\Migrations\**" />
-    <Content Remove="Data\Migrations\**" />
-    <EmbeddedResource Remove="Data\Migrations\**" />
-    <None Remove="Data\Migrations\**" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="7.1.1" />
@@ -40,6 +33,10 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\Components\Login\" />
   </ItemGroup>
 
 </Project>

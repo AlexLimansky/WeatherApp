@@ -1,14 +1,21 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using System.Threading.Tasks;
+using WeatherApp.Web.Options;
 
 namespace WeatherApp.Web.Services
 {
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
+        private EmailOptions options;
+        public AuthMessageSender(IOptions<EmailOptions> options)
+        {
+            this.options = options.Value;
+        }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var sender = new MailboxAddress("Администрация сайта", "alexandr.limanscky@gmail.com");
+            var sender = new MailboxAddress(options.SenderName, options.SenderAdress);
             var receiver = new MailboxAddress("", email);
             var emailMessage = new MimeMessage()
             {
@@ -23,8 +30,8 @@ namespace WeatherApp.Web.Services
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync("smtp.gmail.com", 587, false);
-                await client.AuthenticateAsync(sender.Address, "Reira147Zange369");
+                await client.ConnectAsync(options.SenderHost, options.SenderPort, options.UseSsl);
+                await client.AuthenticateAsync(options.SenderAdress, options.SenderPass);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }

@@ -7,14 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WeatherApp.Web.Data;
 using WeatherApp.Web.Models;
 using WeatherApp.Web.Services;
+using WeatherApp.Web.Options;
 using Microsoft.AspNetCore.Identity;
 using NLog.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using FluentValidation.AspNetCore;
 using WeatherApp.Web.Validators;
-using WeatherApp.Web.Data;
 
 namespace WeatherApp.Web
 {
@@ -82,9 +83,12 @@ namespace WeatherApp.Web
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();          
+            services.AddTransient<ISmsSender, AuthMessageSender>();
+            
+            services.AddScoped<IRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
 
             services.Configure<WeatherApiOptions>(Configuration.GetSection("WeatherApi"));
+            services.Configure<EmailOptions>(Configuration.GetSection("Email"));
             services.Configure<LogOptions>(Configuration.GetSection("Logging:LogLevel"));
         }
 

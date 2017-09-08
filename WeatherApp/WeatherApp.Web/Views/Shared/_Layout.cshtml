@@ -34,7 +34,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">CityManager</a></li>
                 </ul>
-                @await Html.PartialAsync("_LoginPartial")
+                @await Component.InvokeAsync("Login")
             </div>
         </div>
     </nav>

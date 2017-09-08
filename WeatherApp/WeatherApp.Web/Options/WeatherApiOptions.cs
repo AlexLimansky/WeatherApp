@@ -1,4 +1,4 @@
-﻿namespace WeatherApp.Web.Services
+﻿namespace WeatherApp.Web.Options
 {
     public class WeatherApiOptions
     {
