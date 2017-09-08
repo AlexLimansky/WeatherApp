@@ -1,0 +1,12 @@
+@model WeatherApp.Web.Models.CityWeatherInfo
+<div class="col-md-3">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            <span class="h3">@Model.Name</span>
+            <button type="button" class="close" data-toggle="modal" data-target="#myModal" data-id=@Model.Name>&times;</button>
+        </div>
+        <div class="panel-body text-center">
+            <span class="h1">@Model.Temperature</span>
+        </div>
+    </div>
+</div>

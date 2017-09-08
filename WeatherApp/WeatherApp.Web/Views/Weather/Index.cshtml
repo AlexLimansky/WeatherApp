@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Weather Page";
+}
+@model IEnumerable<CityWeatherInfo>
+
+<div class="page-header text-center">
+    <h1>Current temperature from any city</h1>
+</div>
+
+<a asp-area="" asp-controller="Weather" asp-action="AddCity" class="btn btn-info btn-block btn-lg">Add new city to list</a>
+<br />
+<div class="row">   
+    @foreach (var item in Model)
+    {
+        @await Component.InvokeAsync("City", new { data = item })
+    }
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <b id="CityName"></b> from your list?</p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Weather" asp-action="RemoveCity" method="post" class="form-inline" role="form">
+                    <input type="hidden" id="city" name="city">
+                    <button type="submit" class="btn btn-warning pull-left"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

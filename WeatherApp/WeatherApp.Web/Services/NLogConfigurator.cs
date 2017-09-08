@@ -20,7 +20,7 @@ namespace WeatherApp.Web.Services
                 Layout = "${message}"
             };
             config.AddTarget("file", fileTarget);
-            var ruleDefault = new LoggingRule("WeatherApp*", LogLevel.FromString(option.Default), fileTarget);
+            var ruleDefault = new LoggingRule("Weather*", LogLevel.FromString(option.Default), fileTarget);
             var ruleSystem = new LoggingRule("System", LogLevel.FromString(option.System), fileTarget);
             var ruleMicrosoft = new LoggingRule("Microsoft", LogLevel.FromString(option.Microsoft), fileTarget);
             config.LoggingRules.Add(ruleDefault);

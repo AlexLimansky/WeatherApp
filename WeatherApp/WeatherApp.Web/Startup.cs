@@ -16,6 +16,8 @@ using NLog.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using FluentValidation.AspNetCore;
 using WeatherApp.Web.Validators;
+using WeatherApp.Web.WeatherServices;
+using System.Linq;
 
 namespace WeatherApp.Web
 {
@@ -23,17 +25,17 @@ namespace WeatherApp.Web
     {
         public Startup(IHostingEnvironment env)
         {
+            var keys = Environment.GetCommandLineArgs().Skip(1).ToArray();
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddCommandLine(keys);
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets<Startup>();
-            }
-
+            }          
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -43,12 +45,16 @@ namespace WeatherApp.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddDbContext<ApplicationDbContext>(options =>
+            if (Configuration["db"] == "mysql")
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
+            }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -86,6 +92,9 @@ namespace WeatherApp.Web
             services.AddTransient<ISmsSender, AuthMessageSender>();
             
             services.AddScoped<IRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
+            services.AddScoped<IRepository<CityWeatherInfo>, GenericRepository<CityWeatherInfo>>();
+            services.AddSingleton<IWeatherService, WeatherService>();
+            services.AddScoped<IWeatherManager, WeatherManager>();
 
             services.Configure<WeatherApiOptions>(Configuration.GetSection("WeatherApi"));
             services.Configure<EmailOptions>(Configuration.GetSection("Email"));
@@ -106,7 +115,7 @@ namespace WeatherApp.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Weather/Error");
             }
 
             app.UseStaticFiles();
@@ -119,9 +128,8 @@ namespace WeatherApp.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Weather}/{action=Index}/{id?}");
             });
-
             DatabaseInitialize(app.ApplicationServices).Wait();
         }
         public async Task DatabaseInitialize(IServiceProvider serviceProvider)

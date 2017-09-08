@@ -9,7 +9,6 @@ using WeatherApp.Web.Models.AccountViewModels;
 using WeatherApp.Web.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
-using MailKit;
 
 namespace WeatherApp.Web.Controllers
 {
@@ -131,8 +130,8 @@ namespace WeatherApp.Web.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            _logger.LogInformation(4, $"INFO - {DateTime.Now} - User logged out.");
+            return RedirectToAction(nameof(WeatherController.Index), "Weather");
         }
 
         //
@@ -258,7 +257,7 @@ namespace WeatherApp.Web.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(WeatherController.Index), "Weather");
             }
         }
 
