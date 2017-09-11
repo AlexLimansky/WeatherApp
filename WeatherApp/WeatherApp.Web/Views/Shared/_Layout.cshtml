@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WeatherApp.Web</title>
+    <title>@ViewData["Title"] - World Weather</title>
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -31,7 +31,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Weather" asp-action="Index">CityManager</a></li>
+                    <li><a asp-area="" asp-controller="Weather" asp-action="Index">World Weather</a></li>
                 </ul>
                 @await Component.InvokeAsync("Login")
             </div>
@@ -41,7 +41,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - WeatherApp.Web</p>
+            <p>&copy; 2017 - World Weather</p>
         </footer>
     </div>
 

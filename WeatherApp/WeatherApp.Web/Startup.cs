@@ -18,6 +18,11 @@ using FluentValidation.AspNetCore;
 using WeatherApp.Web.Validators;
 using WeatherApp.Web.WeatherServices;
 using System.Linq;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
+using FluentValidation;
+using WeatherApp.Web.Models.AccountViewModels;
 
 namespace WeatherApp.Web
 {
@@ -45,15 +50,19 @@ namespace WeatherApp.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var logger = services.BuildServiceProvider().GetRequiredService<ILogger<Startup>>();
+            logger.LogInformation($"INFO - {DateTime.Now} - App started with MySQL database");
             if (Configuration["db"] == "mysql")
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
+                logger.LogInformation($"INFO - {DateTime.Now} - App started with MySQL database");
             }
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                logger.LogInformation($"INFO - {DateTime.Now} - App started with MSSQL database");
             }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -62,8 +71,12 @@ namespace WeatherApp.Web
 
             services.AddMemoryCache();
 
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
             services.AddMvc()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ApplicationUserValidator>());
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ApplicationUserValidator>())
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -90,11 +103,13 @@ namespace WeatherApp.Web
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            
+            services.AddTransient<IValidator<RegisterViewModel>, ApplicationUserValidator>();
+
             services.AddScoped<IRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
             services.AddScoped<IRepository<CityWeatherInfo>, GenericRepository<CityWeatherInfo>>();
             services.AddSingleton<IWeatherService, WeatherService>();
             services.AddScoped<IWeatherManager, WeatherManager>();
+            services.AddScoped<DbContext, ApplicationDbContext>();
 
             services.Configure<WeatherApiOptions>(Configuration.GetSection("WeatherApi"));
             services.Configure<EmailOptions>(Configuration.GetSection("Email"));
@@ -118,8 +133,20 @@ namespace WeatherApp.Web
                 app.UseExceptionHandler("/Weather/Error");
             }
 
-            app.UseStaticFiles();
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en"),
+                new CultureInfo("ru")
+            };
 
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("ru"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
+
+            app.UseStaticFiles();
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715

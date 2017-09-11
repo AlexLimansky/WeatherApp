@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace WeatherApp.Web.Data
 {
@@ -26,9 +28,19 @@ namespace WeatherApp.Web.Data
             _context.SaveChanges();
         }
 
-        public TEntity Get(int id)
+        public TEntity Get(string id)
         {
             return _dbSet.Find(id);
+        }
+
+        public TEntity Get(Func<TEntity, bool> id, params Expression<Func<TEntity, object>>[] includeProperies)
+        {
+            var results = _dbSet.Include(includeProperies[0]);
+            for(int i = 1; i < includeProperies.Length; i++)
+            {
+                results = _dbSet.Include(includeProperies[i]);
+            }
+            return results.First(id);
         }
 
         public IEnumerable<TEntity> GetAll()

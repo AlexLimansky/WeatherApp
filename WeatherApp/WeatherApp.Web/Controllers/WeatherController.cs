@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Web.WeatherServices;
-using WeatherApp.Web.Options;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using WeatherApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 
 namespace WeatherApp.Web.Controllers
 {
@@ -17,10 +12,12 @@ namespace WeatherApp.Web.Controllers
     {
         private IWeatherManager manager;
         private readonly UserManager<ApplicationUser> userManager;
-        public WeatherController(IWeatherManager manager, UserManager<ApplicationUser> userManager)
+        private IStringLocalizer<WeatherController> localizer;
+        public WeatherController(IWeatherManager manager, UserManager<ApplicationUser> userManager, IStringLocalizer<WeatherController> localizer)
         {
             this.manager = manager;
             this.userManager = userManager;
+            this.localizer = localizer;
         }
         public IActionResult Index()
         {
@@ -40,7 +37,7 @@ namespace WeatherApp.Web.Controllers
             {
                 return RedirectToAction((nameof(WeatherController.Index)));
             }
-            ModelState.AddModelError("Name", "No city found");
+            ModelState.AddModelError("Name", localizer["No city found"]);
             return View(cityname);
         }
         [HttpPost]

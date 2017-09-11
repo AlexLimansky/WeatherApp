@@ -9,18 +9,20 @@ using WeatherApp.Web.Models.AccountViewModels;
 using WeatherApp.Web.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
+using Microsoft.Extensions.Localization;
 
 namespace WeatherApp.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
-        private readonly ILogger _logger;
-        private readonly string _externalCookieScheme;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IEmailSender emailSender;
+        private readonly ISmsSender smsSender;
+        private readonly ILogger logger;
+        private readonly string externalCookieScheme;
+        private IStringLocalizer<AccountController> localizer;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -29,14 +31,16 @@ namespace WeatherApp.Web.Controllers
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IStringLocalizer<AccountController> localizer)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
-            _emailSender = emailSender;
-            _smsSender = smsSender;
-            _logger = loggerFactory.CreateLogger<AccountController>();
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
+            this.emailSender = emailSender;
+            this.smsSender = smsSender;
+            logger = loggerFactory.CreateLogger<AccountController>();
+            this.localizer = localizer;
         }
 
         //
@@ -46,7 +50,7 @@ namespace WeatherApp.Web.Controllers
         public async Task<IActionResult> Login(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+            await HttpContext.Authentication.SignOutAsync(externalCookieScheme);
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -64,15 +68,15 @@ namespace WeatherApp.Web.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation(1, $"INFO - {DateTime.Now} - User {model.Email} logged in.");
+                    logger.LogInformation(1, $"INFO - {DateTime.Now} - User {model.Email} logged in.");
                     return RedirectToLocal(returnUrl);
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, localizer["Invalid login attempt."]);
                     return View(model);
                 }
             }
@@ -102,18 +106,18 @@ namespace WeatherApp.Web.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email};                
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    await _userManager.AddToRoleAsync(user, "user");
-                    _logger.LogInformation(3, $"INFO - {DateTime.Now} - New user registered.");
+                    var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action(nameof(ConfirmEmail), nameof(AccountController), new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    await emailSender.SendEmailAsync(model.Email, localizer["Confirm your account"],
+                        localizer["Please confirm your account by clicking this link: <a href='{0}'>link</a>", callbackUrl]);
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    await userManager.AddToRoleAsync(user, "user");
+                    logger.LogInformation(3, $"INFO - {DateTime.Now} - New user registered.");
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -129,8 +133,8 @@ namespace WeatherApp.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, $"INFO - {DateTime.Now} - User logged out.");
+            await signInManager.SignOutAsync();
+            logger.LogInformation(4, $"INFO - {DateTime.Now} - User logged out.");
             return RedirectToAction(nameof(WeatherController.Index), "Weather");
         }
 
@@ -152,8 +156,8 @@ namespace WeatherApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -161,10 +165,10 @@ namespace WeatherApp.Web.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(nameof(ResetPassword), nameof(AccountController), new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                await emailSender.SendEmailAsync(model.Email, localizer["Reset Password"],
+                   localizer["Please reset your password by clicking here: <a href='{0}'>link</a>", callbackUrl]);
                 return View("ForgotPasswordConfirmation");
             }
             // If we got this far, something failed, redisplay form
@@ -199,16 +203,16 @@ namespace WeatherApp.Web.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), nameof(AccountController));
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), nameof(AccountController));
             }
             AddErrors(result);
             return View();
@@ -230,12 +234,12 @@ namespace WeatherApp.Web.Controllers
             {
                 return View("Error");
             }
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View("Error");
             }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            var result = await userManager.ConfirmEmailAsync(user, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
