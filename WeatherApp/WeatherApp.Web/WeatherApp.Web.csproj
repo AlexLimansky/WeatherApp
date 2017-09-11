@@ -42,4 +42,9 @@
     <Folder Include="Views\Shared\Components\City\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WeatherApp.Data\WeatherApp.Data.csproj" />
+    <ProjectReference Include="..\WeatherApp.Logic\WeatherApp.Logic.csproj" />
+  </ItemGroup>
+
 </Project>

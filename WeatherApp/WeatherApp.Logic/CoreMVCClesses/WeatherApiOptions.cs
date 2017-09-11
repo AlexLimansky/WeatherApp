@@ -1,4 +1,8 @@
-﻿namespace WeatherApp.Web.Options
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace WeatherApp.Logic.CoreMVCClesses
 {
     public class WeatherApiOptions
     {

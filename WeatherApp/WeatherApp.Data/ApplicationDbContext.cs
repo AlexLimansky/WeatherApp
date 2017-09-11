@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WeatherApp.Web.Models;
+using WeatherApp.Data.Entities;
 
-namespace WeatherApp.Web.Data
+namespace WeatherApp.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WeatherApp.Web.Models;
 using WeatherApp.Web.Models.AccountViewModels;
 using WeatherApp.Web.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Localization;
+using WeatherApp.Data.Entities;
 
 namespace WeatherApp.Web.Controllers
 {

@@ -1,6 +1,6 @@
-﻿using WeatherApp.Web.Models;
+﻿using WeatherApp.Data.Entities;
 
-namespace WeatherApp.Web.WeatherServices
+namespace WeatherApp.Logic.Interfaces
 {
     public interface IWeatherService
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using WeatherApp.Web.Models;
+using WeatherApp.Data.Entities;
 
 namespace WeatherApp.Web.ViewComponents
 {

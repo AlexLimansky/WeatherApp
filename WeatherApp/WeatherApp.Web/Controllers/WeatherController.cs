@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherApp.Web.WeatherServices;
 using Microsoft.AspNetCore.Identity;
-using WeatherApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using WeatherApp.Logic.Interfaces;
+using WeatherApp.Data.Entities;
 
 namespace WeatherApp.Web.Controllers
 {

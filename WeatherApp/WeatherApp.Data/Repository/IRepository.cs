@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace WeatherApp.Web.Data
+namespace WeatherApp.Data.Repository
 {
     public interface IRepository<TEntity> where TEntity : class
     {

@@ -1,6 +1,6 @@
-﻿namespace WeatherApp.Web.Data
+﻿namespace WeatherApp.Data
 {
-    public static class DbInitializer
+    public class DbInitializer
     {
         public static void Initialize(ApplicationDbContext context)
         {

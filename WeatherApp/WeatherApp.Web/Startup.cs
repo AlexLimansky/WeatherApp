@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using WeatherApp.Web.Data;
-using WeatherApp.Web.Models;
 using WeatherApp.Web.Services;
 using WeatherApp.Web.Options;
 using Microsoft.AspNetCore.Identity;
@@ -16,13 +14,17 @@ using NLog.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using FluentValidation.AspNetCore;
 using WeatherApp.Web.Validators;
-using WeatherApp.Web.WeatherServices;
 using System.Linq;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using FluentValidation;
 using WeatherApp.Web.Models.AccountViewModels;
+using WeatherApp.Data.Entities;
+using WeatherApp.Data.Repository;
+using WeatherApp.Logic.Interfaces;
+using WeatherApp.Logic.CoreMVCClesses;
+using WeatherApp.Data;
 
 namespace WeatherApp.Web
 {
@@ -50,19 +52,15 @@ namespace WeatherApp.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var logger = services.BuildServiceProvider().GetRequiredService<ILogger<Startup>>();
-            logger.LogInformation($"INFO - {DateTime.Now} - App started with MySQL database");
             if (Configuration["db"] == "mysql")
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
-                logger.LogInformation($"INFO - {DateTime.Now} - App started with MySQL database");
+                options.UseMySql(Configuration.GetConnectionString("mysql")));
             }
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-                logger.LogInformation($"INFO - {DateTime.Now} - App started with MSSQL database");
+                options.UseSqlServer(Configuration.GetConnectionString("sql")));
             }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -107,8 +105,8 @@ namespace WeatherApp.Web
 
             services.AddScoped<IRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
             services.AddScoped<IRepository<CityWeatherInfo>, GenericRepository<CityWeatherInfo>>();
-            services.AddSingleton<IWeatherService, WeatherService>();
-            services.AddScoped<IWeatherManager, WeatherManager>();
+            services.AddSingleton<IWeatherService, WeatherMVCCoreService>();
+            services.AddScoped<IWeatherManager, WeatherMVCCoreManager>();
             services.AddScoped<DbContext, ApplicationDbContext>();
 
             services.Configure<WeatherApiOptions>(Configuration.GetSection("WeatherApi"));
@@ -161,6 +159,13 @@ namespace WeatherApp.Web
         }
         public async Task DatabaseInitialize(IServiceProvider serviceProvider)
         {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                DbInitializer.Initialize(context);
+            }
+
             RoleManager<IdentityRole> roleManager =
                 serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             if (await roleManager.FindByNameAsync("admin") == null)

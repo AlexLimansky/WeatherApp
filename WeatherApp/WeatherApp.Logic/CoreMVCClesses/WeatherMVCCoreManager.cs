@@ -1,24 +1,25 @@
-﻿using System.Collections.Generic;
-using WeatherApp.Web.Data;
-using WeatherApp.Web.Models;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using WeatherApp.Data.Entities;
+using WeatherApp.Data.Repository;
+using WeatherApp.Logic.Interfaces;
 
-namespace WeatherApp.Web.WeatherServices
+namespace WeatherApp.Logic.CoreMVCClesses
 {
-    public class WeatherManager : IWeatherManager
+    public class WeatherMVCCoreManager : IWeatherManager
     {
         private IRepository<ApplicationUser> users;
         private IRepository<CityWeatherInfo> cities;
         private readonly IWeatherService service;
         private readonly ILogger logger;
-        public WeatherManager(IRepository<ApplicationUser> users, IRepository<CityWeatherInfo> cities, IWeatherService service, ILoggerFactory loggerFactory)
+        public WeatherMVCCoreManager(IRepository<ApplicationUser> users, IRepository<CityWeatherInfo> cities, IWeatherService service, ILoggerFactory loggerFactory)
         {
             this.users = users;
             this.cities = cities;
             this.service = service;
-            logger = loggerFactory.CreateLogger<WeatherManager>();
+            logger = loggerFactory.CreateLogger<WeatherMVCCoreManager>();
         }
         public IEnumerable<CityWeatherInfo> WeatherInfoCollection(string userId)
         {
@@ -26,7 +27,7 @@ namespace WeatherApp.Web.WeatherServices
             var user = users.Get(u => u.Id == userId, c => c.CityWeatherInfos);
             logger.LogDebug($"DEBUG - {DateTime.Now} - Get {user.UserName}'s collection of forecasts");
             var result = new List<CityWeatherInfo>();
-            foreach(var entry in user.CityWeatherInfos)
+            foreach (var entry in user.CityWeatherInfos)
             {
                 var info = service.GetWeatherInfo(entry.Name);
                 if (info != null)
@@ -47,8 +48,8 @@ namespace WeatherApp.Web.WeatherServices
         public bool AddCity(string userId, string city)
         {
             logger.LogTrace($"TRACE - {DateTime.Now} - Entered AddCity method");
-            var info = service.GetWeatherInfo(city);           
-            if(info != null)
+            var info = service.GetWeatherInfo(city);
+            if (info != null)
             {
                 var user = users.Get(u => u.Id == userId, c => c.CityWeatherInfos);
                 if (cities.GetAll().Any(c => c.Name == city))
@@ -58,7 +59,7 @@ namespace WeatherApp.Web.WeatherServices
                     user.CityWeatherInfos.Add(item);
                     users.Update(user);
                     return true;
-                }                
+                }
                 if (user.CityWeatherInfos == null)
                 {
                     logger.LogDebug($"DEBUG - {DateTime.Now} - Added first info to {user.UserName}'s collection");
@@ -68,7 +69,7 @@ namespace WeatherApp.Web.WeatherServices
                 }
                 else
                 {
-                    if(user.CityWeatherInfos.Any(c => c.Name == info.Name))
+                    if (user.CityWeatherInfos.Any(c => c.Name == info.Name))
                     {
                         logger.LogDebug($"DEBUG - {DateTime.Now} - Edited info in {user.UserName}'s collection");
                         var item = user.CityWeatherInfos.First(c => c.Name == info.Name);
@@ -81,7 +82,7 @@ namespace WeatherApp.Web.WeatherServices
                         user.CityWeatherInfos.Add(info);
                         users.Update(user);
                     }
-                }               
+                }
                 logger.LogInformation($"INFO - {DateTime.Now} - Added info to {user.UserName}'s collection");
                 logger.LogTrace($"TRACE - {DateTime.Now} - Ended AddCity method");
                 return true;

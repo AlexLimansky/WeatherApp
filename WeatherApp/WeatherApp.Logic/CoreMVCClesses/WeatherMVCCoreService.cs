@@ -4,21 +4,21 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
-using WeatherApp.Web.Models;
-using WeatherApp.Web.Options;
+using WeatherApp.Data.Entities;
+using WeatherApp.Logic.Interfaces;
 
-namespace WeatherApp.Web.WeatherServices
+namespace WeatherApp.Logic.CoreMVCClesses
 {
-    public class WeatherService : IWeatherService
+    public class WeatherMVCCoreService : IWeatherService
     {
         private IMemoryCache cache;
         private WeatherApiOptions options;
         private ILogger logger;
-        public WeatherService(IMemoryCache cache, IOptions<WeatherApiOptions> options, ILoggerFactory loggerFactory)
+        public WeatherMVCCoreService(IMemoryCache cache, IOptions<WeatherApiOptions> options, ILoggerFactory loggerFactory)
         {
             this.cache = cache;
             this.options = options.Value;
-            logger = loggerFactory.CreateLogger<WeatherService>();
+            logger = loggerFactory.CreateLogger<WeatherMVCCoreService>();
         }
 
         public CityWeatherInfo GetWeatherInfo(string city)
@@ -34,12 +34,12 @@ namespace WeatherApp.Web.WeatherServices
                 response.EnsureSuccessStatusCode();
                 var content = response.Content.ReadAsStringAsync().Result;
                 var tempResult = JObject.Parse(content).SelectToken(@"$.main.temp").ToObject<string>();
-                var cityResult = JObject.Parse(content).SelectToken(@"$.name").ToObject<string>();              
+                var cityResult = JObject.Parse(content).SelectToken(@"$.name").ToObject<string>();
                 if (String.Equals(cityResult, city, StringComparison.OrdinalIgnoreCase))
                 {
                     logger.LogDebug($"DEBUG - {DateTime.Now} - Received info about {city} from WeatherAPI");
                     result = new CityWeatherInfo() { Name = city, Temperature = tempResult };
-                    SaveWeatherInfo(result);                    
+                    SaveWeatherInfo(result);
                     logger.LogTrace($"TRACE - {DateTime.Now} - Ended GetWeatherInfo method");
                     return result;
                 }
@@ -49,7 +49,7 @@ namespace WeatherApp.Web.WeatherServices
             }
             logger.LogDebug($"DEBUG - {DateTime.Now} - Returned info about {city} from cache");
             logger.LogTrace($"TRACE - {DateTime.Now} - Ended GetWeatherInfo method");
-            return result;            
+            return result;
         }
         public void SaveWeatherInfo(CityWeatherInfo info)
         {

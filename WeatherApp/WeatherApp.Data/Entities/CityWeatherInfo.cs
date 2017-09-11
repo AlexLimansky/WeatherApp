@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace WeatherApp.Web.Models
+namespace WeatherApp.Data.Entities
 {
     public class CityWeatherInfo
     {

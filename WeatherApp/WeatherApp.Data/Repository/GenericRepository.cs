@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
+using System.Linq;
 
-namespace WeatherApp.Web.Data
+namespace WeatherApp.Data.Repository
 {
     public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
@@ -36,7 +36,7 @@ namespace WeatherApp.Web.Data
         public TEntity Get(Func<TEntity, bool> id, params Expression<Func<TEntity, object>>[] includeProperies)
         {
             var results = _dbSet.Include(includeProperies[0]);
-            for(int i = 1; i < includeProperies.Length; i++)
+            for (int i = 1; i < includeProperies.Length; i++)
             {
                 results = _dbSet.Include(includeProperies[i]);
             }
