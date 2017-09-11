@@ -1,10 +1,13 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+
 @inject IViewLocalizer localizer
 
 @{
     ViewData["Title"] = @localizer["AddCity"];
 }
-@model WeatherApp.Web.Models.CityWeatherInfo
+
+@model WeatherApp.Data.Entities.CityWeatherInfo
+
 <h2>@localizer["AddCity"]</h2>
 <div>
     <form asp-action="AddCity">
