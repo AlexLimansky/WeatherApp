@@ -32,6 +32,7 @@
                     <li><a asp-area="" asp-controller="Weather" asp-action="Index">World Weather</a></li>
                 </ul>
                 @await Component.InvokeAsync("Login")
+                @await Html.PartialAsync("_SelectLanguagePartial")
             </div>
         </div>
     </nav>
