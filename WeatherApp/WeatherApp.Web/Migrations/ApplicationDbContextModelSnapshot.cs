@@ -9,7 +9,9 @@ namespace WeatherApp.Web.Migrations
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
+#pragma warning disable Nix02 // Method is too long
         protected override void BuildModel(ModelBuilder modelBuilder)
+#pragma warning restore Nix02 // Method is too long
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

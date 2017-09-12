@@ -6,6 +6,7 @@ namespace WeatherApp.Data.Entities
     {
         [Key]
         public string Name { get; set; }
+
         public string Temperature { get; set; }
     }
 }

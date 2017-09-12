@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WeatherApp.Web.ViewComponents
 {
@@ -7,12 +7,13 @@ namespace WeatherApp.Web.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var user = HttpContext.User.Identity;
-            if (HttpContext.User.Identity.Name != null)
+            var user = this.HttpContext.User.Identity;
+            if (this.HttpContext.User.Identity.Name != null)
             {
-                return View("Default", user.Name);
+                return this.View("Default", user.Name);
             }
-            return View("NoUser");
+
+            return this.View("NoUser");
         }
     }
 }

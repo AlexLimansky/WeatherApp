@@ -1,22 +1,22 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using WeatherApp.Web.Services;
-using WeatherApp.Web.Options;
-using Microsoft.AspNetCore.Identity;
-using NLog.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Razor;
+using NLog.Extensions.Logging;
+using WeatherApp.Data;
 using WeatherApp.Data.Entities;
 using WeatherApp.Logic.CoreMVCClesses;
-using WeatherApp.Data;
+using WeatherApp.Web.Options;
+using WeatherApp.Web.Services;
 
 namespace WeatherApp.Web
 {
@@ -34,24 +34,24 @@ namespace WeatherApp.Web
             if (env.IsDevelopment())
             {
                 builder.AddUserSecrets<Startup>();
-            }          
+            }
 
-            Configuration = builder.Build();
+            this.Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Configuration[AppDefaults.DbKey] == AppDefaults.MySqlSelector)
+            if (this.Configuration[AppDefaults.DB_KEY] == AppDefaults.MY_SQL_SELECTOR)
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString(AppDefaults.MySqlSelector)));
+                options.UseMySql(this.Configuration.GetConnectionString(AppDefaults.MY_SQL_SELECTOR)));
             }
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString(AppDefaults.SqlSelector)));
+                options.UseSqlServer(this.Configuration.GetConnectionString(AppDefaults.SQL_SELECTOR)));
             }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -60,7 +60,7 @@ namespace WeatherApp.Web
 
             services.AddMemoryCache();
 
-            services.AddApplicationLocalizationConfiguration(AppDefaults.ResourcesDefaultPath);
+            services.AddApplicationLocalizationConfiguration(AppDefaults.RESOURCES_DEFAULT_PATH);
 
             services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -70,15 +70,16 @@ namespace WeatherApp.Web
 
             services.AddApplicationServices();
 
-            services.Configure<WeatherApiOptions>(Configuration.GetSection(nameof(WeatherApiOptions)));
-            services.Configure<EmailOptions>(Configuration.GetSection(nameof(EmailOptions)));
-            services.Configure<LogOptions>(Configuration.GetSection($"Logging:{nameof(LogOptions)}"));
+            services.Configure<WeatherApiOptions>(this.Configuration.GetSection(nameof(WeatherApiOptions)));
+            services.Configure<EmailOptions>(this.Configuration.GetSection(nameof(EmailOptions)));
+            services.Configure<LogOptions>(this.Configuration.GetSection($"Logging:{nameof(LogOptions)}"));
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<LogOptions> options)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<LogOptions> options)
         {
+            var loggerFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
             loggerFactory.AddNLog();
-            loggerFactory.ConfigureNLog(NLogConfigurator.Configure(Configuration, env, options));
+            loggerFactory.ConfigureNLog(NLogConfigurator.Configure(options));
 
             if (env.IsDevelopment())
             {
@@ -87,7 +88,7 @@ namespace WeatherApp.Web
             }
             else
             {
-                app.UseExceptionHandler(AppDefaults.ErrorDefaultPath);
+                app.UseExceptionHandler(AppDefaults.ERROR_DEFAULT_PATH);
             }
 
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
@@ -103,8 +104,9 @@ namespace WeatherApp.Web
                     template: "{controller=Weather}/{action=Index}/{id?}");
             });
 
-            DatabaseInitialize(app.ApplicationServices).Wait();
+            this.DatabaseInitialize(app.ApplicationServices).Wait();
         }
+
         public async Task DatabaseInitialize(IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -117,13 +119,13 @@ namespace WeatherApp.Web
             RoleManager<IdentityRole> roleManager =
                 serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            foreach(var role in AppDefaults.RolesCollection)
+            foreach (var role in AppDefaults.RolesCollection)
             {
                 if (await roleManager.FindByNameAsync(role) == null)
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
-            }          
+            }
         }
     }
 }

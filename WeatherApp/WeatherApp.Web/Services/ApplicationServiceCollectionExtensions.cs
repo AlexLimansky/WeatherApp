@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using WeatherApp.Data;
 using WeatherApp.Data.Repository;
 using WeatherApp.Logic.CoreMVCClesses;
@@ -42,8 +42,8 @@ namespace WeatherApp.Web.Services
                 options.Lockout.MaxFailedAccessAttempts = 10;
 
                 options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays(150);
-                options.Cookies.ApplicationCookie.LoginPath = AppDefaults.LoginDefaultPath;
-                options.Cookies.ApplicationCookie.LogoutPath = AppDefaults.LogoutDefaultPath;
+                options.Cookies.ApplicationCookie.LoginPath = AppDefaults.LOGIN_DEFAULT_PATH;
+                options.Cookies.ApplicationCookie.LogoutPath = AppDefaults.LOGOUT_DEFAULT_PATH;
 
                 options.User.RequireUniqueEmail = true;
             });
@@ -60,7 +60,7 @@ namespace WeatherApp.Web.Services
                 foreach (var item in AppDefaults.CulturesCollection)
                 {
                     supportedCultures.Add(new CultureInfo(item));
-                }               
+                }
 
                 options.DefaultRequestCulture = new RequestCulture(AppDefaults.CulturesCollection[0]);
                 options.SupportedCultures = supportedCultures;

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -10,7 +8,7 @@ namespace WeatherApp.Web.Services
 {
     public static class NLogConfigurator
     {
-        public static LoggingConfiguration Configure(IConfigurationRoot configuration, IHostingEnvironment env, IOptions<LogOptions> options)
+        public static LoggingConfiguration Configure(IOptions<LogOptions> options)
         {
             LogOptions option = options.Value;
             var config = new LoggingConfiguration();

@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WeatherApp.Web.Migrations
 {
     public partial class InitDataBase : Migration
     {
+#pragma warning disable Nix02 // Method is too long
         protected override void Up(MigrationBuilder migrationBuilder)
+#pragma warning restore Nix02 // Method is too long
         {
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",

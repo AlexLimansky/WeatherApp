@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Data.Entities;
 
 namespace WeatherApp.Web.ViewComponents
@@ -8,7 +8,7 @@ namespace WeatherApp.Web.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync(CityWeatherInfo data)
         {
-            return View(data);
+            return this.View(data);
         }
     }
 }
