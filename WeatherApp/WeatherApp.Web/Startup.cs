@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Identity;
 using NLog.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using WeatherApp.Data.Entities;
 using WeatherApp.Logic.CoreMVCClesses;
@@ -45,15 +43,15 @@ namespace WeatherApp.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Configuration["db"] == "mysql")
+            if (Configuration[AppDefaults.DbKey] == AppDefaults.MySqlSelector)
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("mysql")));
+                options.UseMySql(Configuration.GetConnectionString(AppDefaults.MySqlSelector)));
             }
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("sql")));
+                options.UseSqlServer(Configuration.GetConnectionString(AppDefaults.SqlSelector)));
             }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -62,7 +60,7 @@ namespace WeatherApp.Web
 
             services.AddMemoryCache();
 
-            services.AddApplicationLocalizationConfiguration("Resources");
+            services.AddApplicationLocalizationConfiguration(AppDefaults.ResourcesDefaultPath);
 
             services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -89,7 +87,7 @@ namespace WeatherApp.Web
             }
             else
             {
-                app.UseExceptionHandler("/Weather/Error");
+                app.UseExceptionHandler(AppDefaults.ErrorDefaultPath);
             }
 
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
@@ -119,15 +117,13 @@ namespace WeatherApp.Web
             RoleManager<IdentityRole> roleManager =
                 serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            if (await roleManager.FindByNameAsync("admin") == null)
+            foreach(var role in AppDefaults.RolesCollection)
             {
-                await roleManager.CreateAsync(new IdentityRole("admin"));
-            }
-
-            if (await roleManager.FindByNameAsync("user") == null)
-            {
-                await roleManager.CreateAsync(new IdentityRole("user"));
-            }
+                if (await roleManager.FindByNameAsync(role) == null)
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }          
         }
     }
 }

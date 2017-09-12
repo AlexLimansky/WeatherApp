@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using WeatherApp.Data;
 using WeatherApp.Data.Repository;
@@ -41,8 +42,8 @@ namespace WeatherApp.Web.Services
                 options.Lockout.MaxFailedAccessAttempts = 10;
 
                 options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays(150);
-                options.Cookies.ApplicationCookie.LoginPath = "/Account/LogIn";
-                options.Cookies.ApplicationCookie.LogoutPath = "/Account/LogOut";
+                options.Cookies.ApplicationCookie.LoginPath = AppDefaults.LoginDefaultPath;
+                options.Cookies.ApplicationCookie.LogoutPath = AppDefaults.LogoutDefaultPath;
 
                 options.User.RequireUniqueEmail = true;
             });
@@ -54,13 +55,14 @@ namespace WeatherApp.Web.Services
         {
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultures = new[]
-                {
-                    new CultureInfo("en"),
-                    new CultureInfo("ru")
-                };
+                var supportedCultures = new List<CultureInfo>();
 
-                options.DefaultRequestCulture = new RequestCulture("en");
+                foreach (var item in AppDefaults.CulturesCollection)
+                {
+                    supportedCultures.Add(new CultureInfo(item));
+                }               
+
+                options.DefaultRequestCulture = new RequestCulture(AppDefaults.CulturesCollection[0]);
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
