@@ -38,12 +38,23 @@ namespace WeatherApp.Logic.CoreMVCClesses
                 var content = response.Content.ReadAsStringAsync().Result;
                 var tempResult = JObject.Parse(content).SelectToken(@"$.main.temp").ToObject<string>();
                 var cityResult = JObject.Parse(content).SelectToken(@"$.name").ToObject<string>();
-
+                var humidityResult = JObject.Parse(content).SelectToken(@"$.main.humidity").ToObject<int>();
+                var stateResult = JObject.Parse(content).SelectToken(@"$.weather..description").ToObject<string>();
+                var iconResult = JObject.Parse(content).SelectToken(@"$.weather..icon").ToObject<string>();
+                var cloudsResult = JObject.Parse(content).SelectToken(@"$.clouds.all").ToObject<int>();
                 if (string.Equals(cityResult, city, StringComparison.OrdinalIgnoreCase))
                 {
                     this.logger.LogDebug($"DEBUG - {DateTime.Now} - Received info about {city} from WeatherAPI");
 
-                    result = new CityWeatherInfo() { Name = city, Temperature = tempResult };
+                    result = new CityWeatherInfo()
+                    {
+                        Name = city,
+                        Temperature = tempResult,
+                        Humidity = humidityResult,
+                        WeatherState = stateResult,
+                        Icon = iconResult,
+                        Clouds = cloudsResult
+                    };
                     this.SaveWeatherInfo(result);
 
                     this.logger.LogTrace($"TRACE - {DateTime.Now} - Ended GetWeatherInfo method");

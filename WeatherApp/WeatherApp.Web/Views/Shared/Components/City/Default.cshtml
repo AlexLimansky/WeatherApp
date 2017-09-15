@@ -2,11 +2,23 @@
 <div class="col-md-3">
     <div class="panel panel-default">
         <div class="panel-heading text-center">
-            <span class="h3">@Model.Name</span>
+            @{
+                var img = $"http://openweathermap.org/img/w/{Model.Icon}.png";
+            }
+            <span class="h3">@Model.Name <img src="@img" /></span>
             <button type="button" class="close" data-toggle="modal" data-target="#myModal" data-id=@Model.Name>&times;</button>
         </div>
-        <div class="panel-body text-center">
-            <span class="h1">@Model.Temperature</span>
+        <div class="panel-body">
+            <div class="text-center">
+                <span class="h2">@Model.Temperature &#8451;</span>
+            </div>
+            <div class="text-center">
+                Weather is @Model.WeatherState
+                <br />
+                Humidity is @Model.Humidity %
+                <br />
+                Cloudness is @Model.Clouds %
+            </div>
         </div>
     </div>
 </div>

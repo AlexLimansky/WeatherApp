@@ -54,7 +54,6 @@ namespace WeatherApp.Logic.CoreMVCClesses
         public bool AddCity(string userId, string city)
         {
             this.logger.LogTrace($"TRACE - {DateTime.Now} - Entered AddCity method");
-
             var info = this.service.GetWeatherInfo(city);
 
             if (info != null)
@@ -64,7 +63,8 @@ namespace WeatherApp.Logic.CoreMVCClesses
                 if (this.cities.GetAll().Any(c => c.Name == city))
                 {
                     var item = this.cities.Get(city);
-                    item.Temperature = info.Temperature;
+                    item = info;
+                    item.Name = city;
                     user.CityWeatherInfos.Add(item);
                     this.users.Update(user);
                     return true;
