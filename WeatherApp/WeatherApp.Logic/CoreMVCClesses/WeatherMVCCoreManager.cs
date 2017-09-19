@@ -29,7 +29,7 @@ namespace WeatherApp.Logic.CoreMVCClesses
             this.logger = loggerFactory.CreateLogger<WeatherMVCCoreManager>();
         }
 
-        public IEnumerable<CityWeatherInfo> WeatherInfoCollection(string userId)
+        public IEnumerable<CityWeatherInfo> GetWeatherInfoCollection(string userId)
         {
             var user = this.users.Get(u => u.Id == userId, c => c.CityWeatherInfos);
             var result = new List<CityWeatherInfo>();
@@ -63,35 +63,26 @@ namespace WeatherApp.Logic.CoreMVCClesses
                 if (this.cities.GetAll().Any(c => c.Name == city))
                 {
                     var item = this.cities.Get(city);
-                    item = info;
-                    item.Name = city;
-                    user.CityWeatherInfos.Add(item);
-                    this.users.Update(user);
-                    return true;
-                }
+                    WeatherParser.Update(info, item);
 
-                if (user.CityWeatherInfos == null)
-                {
-                    this.logger.LogDebug($"DEBUG - {DateTime.Now} - Added first info to {user.UserName}'s collection");
-                    user.CityWeatherInfos = new List<CityWeatherInfo>();
-                    user.CityWeatherInfos.Add(info);
-                    this.users.Update(user);
-                }
-                else
-                {
                     if (user.CityWeatherInfos.Any(c => c.Name == info.Name))
                     {
                         this.logger.LogDebug($"DEBUG - {DateTime.Now} - Edited info in {user.UserName}'s collection");
-                        var item = user.CityWeatherInfos.First(c => c.Name == info.Name);
-                        item.Temperature = info.Temperature;
                         this.cities.Update(item);
                     }
                     else
                     {
-                        this.logger.LogDebug($"DEBUG - {DateTime.Now} - Added new info to {user.UserName}'s collection");
-                        user.CityWeatherInfos.Add(info);
+                        this.logger.LogDebug($"DEBUG - {DateTime.Now} - Added updated info to {user.UserName}'s collection");
+                        user.CityWeatherInfos.Add(item);
                         this.users.Update(user);
+                        return true;
                     }
+                }
+                else
+                {
+                    this.logger.LogDebug($"DEBUG - {DateTime.Now} - Added new info to {user.UserName}'s collection");
+                    user.CityWeatherInfos.Add(info);
+                    this.users.Update(user);
                 }
 
                 this.logger.LogInformation($"INFO - {DateTime.Now} - Added info to {user.UserName}'s collection");

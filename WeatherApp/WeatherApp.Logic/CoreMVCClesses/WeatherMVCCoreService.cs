@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -24,37 +25,25 @@ namespace WeatherApp.Logic.CoreMVCClesses
 
         public CityWeatherInfo GetWeatherInfo(string city)
         {
+            var lang = CultureInfo.CurrentCulture.Name;
             this.logger.LogTrace($"TRACE - {DateTime.Now} - Entered GetWeatherInfo method");
 
-            if (!this.cache.TryGetValue(city, out CityWeatherInfo result))
+            if (!this.cache.TryGetValue(city + lang, out CityWeatherInfo result))
             {
                 HttpClient client = new HttpClient
                 {
-                    BaseAddress = new Uri(this.options.Baseurl + $"{city}&units={this.options.Units}&appid={this.options.Appid}"),
+                    BaseAddress = new Uri(this.options.Baseurl + $"{city}&units={this.options.Units}&lang={lang}&appid={this.options.Appid}"),
                     Timeout = TimeSpan.FromSeconds(5)
                 };
                 var response = client.GetAsync(client.BaseAddress).Result;
                 response.EnsureSuccessStatusCode();
                 var content = response.Content.ReadAsStringAsync().Result;
-                var tempResult = JObject.Parse(content).SelectToken(@"$.main.temp").ToObject<string>();
-                var cityResult = JObject.Parse(content).SelectToken(@"$.name").ToObject<string>();
-                var humidityResult = JObject.Parse(content).SelectToken(@"$.main.humidity").ToObject<int>();
-                var stateResult = JObject.Parse(content).SelectToken(@"$.weather..description").ToObject<string>();
-                var iconResult = JObject.Parse(content).SelectToken(@"$.weather..icon").ToObject<string>();
-                var cloudsResult = JObject.Parse(content).SelectToken(@"$.clouds.all").ToObject<int>();
-                if (string.Equals(cityResult, city, StringComparison.OrdinalIgnoreCase))
+                var weather = WeatherParser.Parse(JObject.Parse(content));
+                if (string.Equals(weather.Name, city, StringComparison.OrdinalIgnoreCase))
                 {
                     this.logger.LogDebug($"DEBUG - {DateTime.Now} - Received info about {city} from WeatherAPI");
 
-                    result = new CityWeatherInfo()
-                    {
-                        Name = city,
-                        Temperature = tempResult,
-                        Humidity = humidityResult,
-                        WeatherState = stateResult,
-                        Icon = iconResult,
-                        Clouds = cloudsResult
-                    };
+                    result = weather;
                     this.SaveWeatherInfo(result);
 
                     this.logger.LogTrace($"TRACE - {DateTime.Now} - Ended GetWeatherInfo method");
@@ -73,11 +62,13 @@ namespace WeatherApp.Logic.CoreMVCClesses
 
         public void SaveWeatherInfo(CityWeatherInfo info)
         {
+            var lang = CultureInfo.CurrentCulture.Name;
+
             this.logger.LogTrace($"TRACE - {DateTime.Now} - Entered SaveWeatherInfo method");
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromHours(1));
-            this.cache.Set(info.Name, info, cacheEntryOptions);
+            this.cache.Set(info.Name + lang, info, cacheEntryOptions);
 
             this.logger.LogDebug($"DEBUG - {DateTime.Now} - Added info about {info.Name} to cache");
             this.logger.LogTrace($"TRACE - {DateTime.Now} - Ended SaveWeatherInfo method");

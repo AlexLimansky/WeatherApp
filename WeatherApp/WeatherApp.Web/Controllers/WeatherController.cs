@@ -28,7 +28,7 @@ namespace WeatherApp.Web.Controllers
         public IActionResult Index()
         {
             var userId = this.userManager.GetUserId(this.HttpContext.User);
-            return this.View(this.manager.WeatherInfoCollection(userId));
+            return this.View(this.manager.GetWeatherInfoCollection(userId));
         }
 
         [HttpGet]

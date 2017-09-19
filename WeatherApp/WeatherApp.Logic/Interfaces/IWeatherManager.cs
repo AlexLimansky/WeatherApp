@@ -5,7 +5,7 @@ namespace WeatherApp.Logic.Interfaces
 {
     public interface IWeatherManager
     {
-        IEnumerable<CityWeatherInfo> WeatherInfoCollection(string username);
+        IEnumerable<CityWeatherInfo> GetWeatherInfoCollection(string username);
 
         bool AddCity(string username, string city);
 
