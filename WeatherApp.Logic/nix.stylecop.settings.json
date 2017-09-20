@@ -1,0 +1,7 @@
+{
+  "MaxLineLength": 200,
+  "MaxMethodLines": 50,
+  "MaxFileLines": 1000,
+  "MaxParametersInMethod": 5,
+  "MaxParametersInConstructor": 5
+}

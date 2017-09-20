@@ -1,0 +1,13 @@
+﻿@using Microsoft.AspNetCore.Diagnostics
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer localizer
+@model ExceptionHandlerFeature
+
+@{
+    ViewData["Title"] = localizer["Error"];
+}
+
+<h1 class="text-danger">@localizer["Error"]!</h1>
+<h2 class="text-danger">@localizer["Your request to {0} ended with error:", Model.Path]</h2>
+<h2 class="text-danger">@Model.Error.Message</h2>
