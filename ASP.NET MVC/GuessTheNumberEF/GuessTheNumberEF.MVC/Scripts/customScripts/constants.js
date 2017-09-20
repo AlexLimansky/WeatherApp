@@ -1,1 +1,0 @@
-﻿var baseUrl = "http://localhost:54787/";
