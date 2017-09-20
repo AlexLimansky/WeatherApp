@@ -6,7 +6,6 @@
     <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <UserSecretsId>aspnet-WeatherApp.Web-91693CA2-BB7E-4FDF-B46F-B66A82C9F218</UserSecretsId>
-    <CodeAnalysisRuleSet>Nix.StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +27,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
-    <PackageReference Include="Nix.StyleCop.Analyzers" Version="1.0.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="1.1.2" />
   </ItemGroup>
@@ -47,14 +45,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WeatherApp.Data\WeatherApp.Data.csproj" />
     <ProjectReference Include="..\WeatherApp.Logic\WeatherApp.Logic.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="nix.stylecop.settings.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="nix.stylecop.settings.json" />
-    <None Include="Nix.StyleCop.Analyzers.ruleset" />
   </ItemGroup>
   
 </Project>
